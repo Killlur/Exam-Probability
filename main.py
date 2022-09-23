@@ -131,9 +131,10 @@ answerkey =(4,
 
 
 def Runfor(times,numberofguesses,positive ,negative):
-    f = open('rawdata.txt', "w")
-    f.close()
-    f = open('rawdata.txt', "a")
+    if C2Var.get()==1:
+        f = open('rawdata.json', "w")
+        f.close()
+        f = open('rawdata.json', "a")
     positiveperlist = [None]*times
     negativeperlist = [None]*times
     nofnegative = 0
@@ -143,11 +144,16 @@ def Runfor(times,numberofguesses,positive ,negative):
     negativeperlist[0] = 0
     for x in range(1,times):
         score=0
+        rawresultlist=[]
         for i in range(0,numberofguesses):
             if (random.randint(1,4) == answerkey[i]):
                 score+=positive
+                if C2Var.get()==1:
+                    rawresultlist.append(f"+{positive}")
             else:
                 score-= abs(negative)
+                if C2Var.get() ==1:
+                    rawresultlist.append(f"-{abs(negative)}")
         if score==0:
             nofzero +=1
             nofpositive+=1
@@ -155,13 +161,14 @@ def Runfor(times,numberofguesses,positive ,negative):
             nofpositive += 1
         else:
             nofnegative +=1
-        f.write(f"{str(score)} \n")
+        if C2Var.get() == 1:
+            f.write(f"{str(score)}  {rawresultlist}\n")
         positiveper = (nofpositive/(x+1))*100
         negativeper = (nofnegative/(x+1))*100
         positiveperlist[x] = positiveper
         negativeperlist[x] = negativeper
-
-    f.close()
+    if C2Var.get()==1:
+        f.close()
 
     print("No of negative results -",nofnegative)
     print("No of positive results -",nofpositive)
@@ -188,7 +195,7 @@ def Runfor(times,numberofguesses,positive ,negative):
     t7.pack()
 
     def b2command():
-        os.startfile('rawdata.txt')
+        os.startfile('rawdata.json')
 
     b2 = tkinter.Button(Extra, text="View raw results", command=b2command)
     b2.pack()
@@ -251,6 +258,11 @@ spacetop.pack()
 C1Var = tkinter.IntVar()
 c1 = tkinter.Checkbutton(top,text = "Draw Graph",variable =C1Var, onvalue=1, offvalue =0)
 c1.pack()
+
+C2Var = tkinter.IntVar()
+c2 = tkinter.Checkbutton(top,text = "Generate raw results[WARNING-RESOURCE INTENSIVE]",variable =C2Var, onvalue=1, offvalue =0)
+c2.pack()
+
 
 spacetop = tkinter.Label(top,text="")
 spacetop.pack()
