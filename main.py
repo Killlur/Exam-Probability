@@ -132,9 +132,9 @@ answerkey =(4,
 
 def Runfor(times,numberofguesses,positive ,negative):
     if C2Var.get()==1:
-        f = open('rawdata.json', "w")
+        f = open('rawdata.txt', "w")
         f.close()
-        f = open('rawdata.json', "a")
+        f = open('rawdata.txt', "a")
     positiveperlist = [None]*times
     negativeperlist = [None]*times
     nofnegative = 0
@@ -195,7 +195,7 @@ def Runfor(times,numberofguesses,positive ,negative):
     t7.pack()
 
     def b2command():
-        os.startfile('rawdata.json')
+        os.startfile('rawdata.txt')
 
     b2 = tkinter.Button(Extra, text="View raw results", command=b2command)
     b2.pack()
