@@ -1,6 +1,7 @@
 import random
 import tkinter
 import matplotlib.pyplot as plt
+import matplotlib.transforms as mtrans
 import numpy as np
 import os
 
@@ -135,14 +136,15 @@ def Runfor(times,numberofguesses,positive ,negative):
         f = open('rawdata.txt', "w")
         f.close()
         f = open('rawdata.txt', "a")
-    positiveperlist = [None]*times
-    negativeperlist = [None]*times
+    positiveperlist = []
+    negativeperlist = []
     nofnegative = 0
     nofpositive = 0
     nofzero = 0
-    positiveperlist[0] = 0
-    negativeperlist[0] = 0
-    for x in range(1,times):
+    positiveperlist.append(0)
+    negativeperlist.append(0)
+    scoresum=0
+    for x in range(times):
         score=0
         rawresultlist=[]
         for i in range(0,numberofguesses):
@@ -156,17 +158,20 @@ def Runfor(times,numberofguesses,positive ,negative):
                     rawresultlist.append(f"-{abs(negative)}")
         if score==0:
             nofzero +=1
-            nofpositive+=1
+
         elif score > 0:
             nofpositive += 1
         else:
             nofnegative +=1
         if C2Var.get() == 1:
             f.write(f"{str(score)}  {rawresultlist}\n")
+        scoresum+=score
         positiveper = (nofpositive/(x+1))*100
         negativeper = (nofnegative/(x+1))*100
-        positiveperlist[x] = positiveper
-        negativeperlist[x] = negativeper
+
+        positiveperlist.append(positiveper)
+        negativeperlist.append(negativeper)
+    zeroper = (nofzero / times) * 100
     if C2Var.get()==1:
         f.close()
 
@@ -176,23 +181,28 @@ def Runfor(times,numberofguesses,positive ,negative):
     Extra = tkinter.Toplevel(top)
 
 
-    text5 = f"No of positive results -{nofpositive} \nAverage Probability of Positive results {round(positiveperlist[-1],4)}%"
+    text5 = f"No of positive results -{nofpositive} \nAverage Probability of Positive results {round(positiveper,4)}%"
     t5 = tkinter.Label(Extra, text=text5)
     t5.pack()
+    text7 = f"No of Zero results -{nofzero} \nAverage Probability of Positive results {round(zeroper,4)}%"
+    t7 = tkinter.Label(Extra, text=text7)
+    t7.pack()
 
     spaceextra = tkinter.Label(Extra, text="")
     spaceextra.pack()
 
-    text6 = f"No of negative results -{nofnegative} \nAverage Probability of Negative results {round(negativeperlist[-1],4)}%"
+    text6 = f"No of negative results -{nofnegative} \nAverage Probability of Negative results {round(negativeper,4)}%"
     t6 = tkinter.Label(Extra, text=text6)
     t6.pack()
 
     spaceextra = tkinter.Label(Extra, text="")
     spaceextra.pack()
 
-    text7 = f"No of zero results -{nofzero}"
-    t7 = tkinter.Label(Extra, text=text7)
-    t7.pack()
+
+
+    text8 = f"Average Marks : {round(scoresum/times,2)}"
+    t8 = tkinter.Label(Extra, text=text8)
+    t8.pack()
 
     def b2command():
         os.startfile('rawdata.txt')
@@ -203,14 +213,42 @@ def Runfor(times,numberofguesses,positive ,negative):
 
 
     if C1Var.get() == 1:
-        a = np.arange(0, times)
-        plt.ylim(0, 100)
-        plt.title("Percentage of +ve and -ve results")
-        plt.ylabel("Percentage(%)")
-        plt.xlabel("Times Simulation is run")
-        plt.plot(a, positiveperlist, color="green", label="Positive Results")
-        plt.plot(a, negativeperlist, color="red", label="Negative Results")
-        plt.legend()
+        fig,(ax1,ax2,ax3)= plt.subplots(3,figsize=(8,8))
+        fig.suptitle('Graphical Representation')
+
+        a = np.arange(0,times+1)
+        z = [zeroper]*(times+1)
+
+        items=(positiveper,negativeper,zeroper)
+        labels=("Positive%","Negative%","Zero%")
+        myexplode = [0.1, 0.1, 0.1]
+
+        ax1.set_ylim(-5,105)
+        ax2.set_ylim(-5, 105)
+        ax1.set_xlabel("Times Simulation is Run")
+        ax2.set_xlabel("Times Simulation is Run")
+        ax1.set_ylabel("% of results")
+        ax2.set_ylabel("% of results")
+
+
+
+        plt.subplots_adjust(left=0.08,
+                            bottom=0,
+                            right=0.971,
+                            top=0.926,
+                            wspace=0,
+                            hspace=0.257)
+
+        ax1.plot(a,positiveperlist,color='green',label=f"% of Positive results-{round(positiveper,3)}")
+        ax1.plot(a,z,color="Blue",ls="dashed",label=f"% of Zero Results-{round(zeroper,3)}")
+        ax2.plot(a,negativeperlist,color='red',label=f"% of Negative results-{round(negativeper,3)}")
+        ax3.pie(items,labels=labels,explode=myexplode,shadow=True,autopct='%1.1f%%')
+
+
+
+        ax1.legend()
+        ax2.legend()
+
         plt.show()
 
 
