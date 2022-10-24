@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.transforms as mtrans
 import numpy as np
 import os
+from numerize import numerize
 
 
 
@@ -184,6 +185,10 @@ def Runfor(times,numberofguesses,positive ,negative):
     text5 = f"No of positive results -{nofpositive} \nAverage Probability of Positive results {round(positiveper,4)}%"
     t5 = tkinter.Label(Extra, text=text5)
     t5.pack()
+
+    spaceextra = tkinter.Label(Extra, text="")
+    spaceextra.pack()
+
     text7 = f"No of Zero results -{nofzero} \nAverage Probability of Positive results {round(zeroper,4)}%"
     t7 = tkinter.Label(Extra, text=text7)
     t7.pack()
@@ -263,6 +268,19 @@ t1= tkinter.Label(top,text="Number of times you want to run this simulation-")
 t1.pack()
 e1 = tkinter.Entry(top)
 e1.pack()
+
+guesslabel = tkinter.Label(top)
+guesslabel.pack()
+
+def guessnumdef():
+    
+    if e1.get():
+        guesslabel['text'] = numerize.numerize(float(e1.get()))
+    top.after(100,guessnumdef)
+
+
+
+guessnumdef()
 
 spacetop = tkinter.Label(top,text="")
 spacetop.pack()
