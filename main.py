@@ -4,134 +4,10 @@ import matplotlib.pyplot as plt
 import matplotlib.transforms as mtrans
 import numpy as np
 import os
-
-
-
-answerkey =(4,
-1,
-4,
-2,
-1,
-2,
-4,
-4,
-4,
-3,
-2,
-3,
-1,
-1,
-3,
-1,
-1,
-1,
-2,
-2,
-3,
-2,
-3,
-1,
-1,
-3,
-1,
-2,
-4,
-3,
-3,
-1,
-3,
-1,
-4,
-2,
-2,
-4,
-2,
-3,
-2,
-1,
-2,
-2,
-1,
-2,
-4,
-3,
-3,
-1,
-2,
-2,
-3,
-1,
-3,
-4,
-2,
-3,
-4,
-3,
-4,
-1,
-1,
-2,
-2,
-4,
-1,
-2,
-3,
-1,
-2,
-3,
-4,
-4,
-4,
-2,
-4,
-1,
-4,
-3,
-3,
-4,
-1,
-2,
-1,
-3,
-3,
-2,
-4,
-3,
-3,
-1,
-3,
-4,
-1,
-4,
-4,
-1,
-2,
-4,
-4,
-3,
-3,
-3,
-3,
-4,
-2,
-4,
-2,
-1,
-3,
-4,
-3,
-4,
-1,
-3,
-3,
-2,
-1,
-4,
-)
-
-
-
+from numerize import numerize
 def Runfor(times,numberofguesses,positive ,negative):
+
+    answerkey = (random.randint(1,4) for _ in range(numberofguesses))
     if C2Var.get()==1:
         f = open('rawdata.txt', "w")
         f.close()
@@ -264,13 +140,23 @@ t1.pack()
 e1 = tkinter.Entry(top)
 e1.pack()
 
+updatelabel1 = tkinter.Label(top,text="",fg="red")
+updatelabel1.pack()
+
+
 spacetop = tkinter.Label(top,text="")
 spacetop.pack()
+
 
 t2= tkinter.Label(top,text="Number of Guesses in each simulation-")
 t2.pack()
 e2 = tkinter.Entry(top)
 e2.pack()
+
+updatelabel2=tkinter.Label(top,text="",fg="red")
+updatelabel2.pack()
+
+
 
 spacetop = tkinter.Label(top,text="")
 spacetop.pack()
@@ -312,6 +198,25 @@ def b1command():
 b1 = tkinter.Button(top,text="GO",command=b1command)
 b1.pack()
 
-top.mainloop()
 
+def Updatetextfunction():
+    try:
+        updatelabel1['text']= numerize.numerize(int(e1.get()))
+
+    except:
+        updatelabel1['text']= "Please enter an integer"
+
+
+    try:
+        a = int(e2.get())
+        updatelabel2['text']=""
+    except:
+         updatelabel2['text']= "Please enter an integer under 120"
+
+    top.after(100,Updatetextfunction)
+
+
+Updatetextfunction()
+
+top.mainloop()
 
