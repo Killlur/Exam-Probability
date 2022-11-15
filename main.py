@@ -7,7 +7,7 @@ import os
 from numerize import numerize
 def Runfor(times,numberofguesses,positive ,negative):
 
-    answerkey = (random.randint(1,4) for _ in range(numberofguesses))
+    answerkey = list(random.randint(1,4) for _ in range(numberofguesses+1))
     if C2Var.get()==1:
         f = open('rawdata.txt', "w")
         f.close()
@@ -211,7 +211,7 @@ def Updatetextfunction():
         a = int(e2.get())
         updatelabel2['text']=""
     except:
-         updatelabel2['text']= "Please enter an integer under 120"
+         updatelabel2['text']= "Please enter an integer"
 
     top.after(100,Updatetextfunction)
 
