@@ -5,9 +5,12 @@ import matplotlib.transforms as mtrans
 import numpy as np
 import os
 from numerize import numerize
-def Runfor(times,numberofguesses,positive ,negative):
 
-    answerkey = list(random.randint(1,4) for _ in range(numberofguesses+1))
+checkone=False
+checktwo=False
+def Runfor(times,numberofguesses,positive ,negative,options):
+
+    answerkey = list(random.randint(1,options) for _ in range(numberofguesses+1))
     if C2Var.get()==1:
         f = open('rawdata.txt', "w")
         f.close()
@@ -24,7 +27,7 @@ def Runfor(times,numberofguesses,positive ,negative):
         score=0
         rawresultlist=[]
         for i in range(0,numberofguesses):
-            if (random.randint(1,4) == answerkey[i]):
+            if (random.randint(1,options) == answerkey[i]):
                 score+=positive
                 if C2Var.get()==1:
                     rawresultlist.append(f"+{positive}")
@@ -49,6 +52,7 @@ def Runfor(times,numberofguesses,positive ,negative):
         negativeperlist.append(negativeper)
     zeroper = (nofzero / times) * 100
     if C2Var.get()==1:
+        f.write(f"\n\nAnswer Key - {answerkey}")
         f.close()
 
     print("No of negative results -",nofnegative)
@@ -156,7 +160,13 @@ e2.pack()
 updatelabel2=tkinter.Label(top,text="",fg="red")
 updatelabel2.pack()
 
+t3 = tkinter.Label(top,text='How many options in each question').pack()
 
+rVar = tkinter.IntVar(None,"4")
+r1 = tkinter.Radiobutton(top,text = "2",variable =rVar, value=2).pack()
+r2 = tkinter.Radiobutton(top,text = "3",variable =rVar, value=3).pack()
+r3 = tkinter.Radiobutton(top,text = "4",variable =rVar, value=4).pack()
+r4 = tkinter.Radiobutton(top,text = "5",variable =rVar, value=5).pack()
 
 spacetop = tkinter.Label(top,text="")
 spacetop.pack()
@@ -192,7 +202,8 @@ spacetop = tkinter.Label(top,text="")
 spacetop.pack()
 
 def b1command():
-    Runfor(int(e1.get()),int(e2.get()),int(e3.get()),int(e4.get()))
+    if checkone and checktwo:
+        Runfor(int(e1.get()),int(e2.get()),int(e3.get()),int(e4.get()),rVar.get())
 
 
 b1 = tkinter.Button(top,text="GO",command=b1command)
@@ -200,19 +211,22 @@ b1.pack()
 
 
 def Updatetextfunction():
+    global checkone
+    global checktwo
     try:
         updatelabel1['text']= numerize.numerize(int(e1.get()))
+        checkone=True
 
     except:
         updatelabel1['text']= "Please enter an integer"
-
+        checkone = False
 
     try:
-        a = int(e2.get())
-        updatelabel2['text']=""
+        updatelabel2['text']=int(e2.get())
+        checktwo=True
     except:
          updatelabel2['text']= "Please enter an integer"
-
+         checktwo=False
     top.after(100,Updatetextfunction)
 
 
