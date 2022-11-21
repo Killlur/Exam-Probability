@@ -5,12 +5,17 @@ import matplotlib.transforms as mtrans
 import numpy as np
 import os
 from numerize import numerize
+import math
 
 checkone=False
 checktwo=False
-def Runfor(times,numberofguesses,positive ,negative,options):
-
-    answerkey = list(random.randint(1,options) for _ in range(numberofguesses+1))
+def Runfor(times,numberofguesses,positive ,negative,options,multicorrect=False):
+    n=0
+    if multicorrect:
+        n=options
+    else:
+        n=1
+    answerkey = list((random.sample(range(1, options + 1), random.randint(1, n))) for _ in range(numberofguesses + 1))
     if C2Var.get()==1:
         f = open('rawdata.txt', "w")
         f.close()
@@ -23,11 +28,13 @@ def Runfor(times,numberofguesses,positive ,negative,options):
     positiveperlist.append(0)
     negativeperlist.append(0)
     scoresum=0
+    scoremax=float('-inf')
+    scoremin =float('inf')
     for x in range(times):
         score=0
         rawresultlist=[]
         for i in range(0,numberofguesses):
-            if (random.randint(1,options) == answerkey[i]):
+            if (random.sample(range(1, options + 1), random.randint(1, n))) == answerkey[i]:
                 score+=positive
                 if C2Var.get()==1:
                     rawresultlist.append(f"+{positive}")
@@ -44,6 +51,10 @@ def Runfor(times,numberofguesses,positive ,negative,options):
             nofnegative +=1
         if C2Var.get() == 1:
             f.write(f"{str(score)}  {rawresultlist}\n")
+        if score>scoremax:
+            scoremax=score
+        if score<scoremin:
+            scoremin=score
         scoresum+=score
         positiveper = (nofpositive/(x+1))*100
         negativeper = (nofnegative/(x+1))*100
@@ -55,9 +66,6 @@ def Runfor(times,numberofguesses,positive ,negative,options):
         f.write(f"\n\nAnswer Key - {answerkey}")
         f.close()
 
-    print("No of negative results -",nofnegative)
-    print("No of positive results -",nofpositive)
-    print("No of zero results -", nofzero)
     Extra = tkinter.Toplevel(top)
 
 
@@ -80,9 +88,15 @@ def Runfor(times,numberofguesses,positive ,negative,options):
 
 
 
-    text8 = f"Average Marks : {round(scoresum/times,2)}"
+    text8 = f"Average Score : {round(scoresum/times,2)}"
     t8 = tkinter.Label(Extra, text=text8)
     t8.pack()
+    text9 = f"Minimum Score : {scoremin}"
+    t9 = tkinter.Label(Extra, text=text9)
+    t9.pack()
+    text10 = f"Maximum Score : {scoremax}"
+    t10 = tkinter.Label(Extra, text=text10)
+    t10.pack()
 
     def b2command():
         os.startfile('rawdata.txt')
@@ -186,6 +200,10 @@ e4 = tkinter.Entry(top,text="-1")
 e4.insert(0,"-1")
 e4.pack()
 
+C3Var = tkinter.BooleanVar()
+c3 = tkinter.Checkbutton(top,text = "Multicorrect(Each option can have muliple options as answers)",variable =C3Var, onvalue=True, offvalue =False)
+c3.pack()
+
 spacetop = tkinter.Label(top,text="")
 spacetop.pack()
 
@@ -203,7 +221,7 @@ spacetop.pack()
 
 def b1command():
     if checkone and checktwo:
-        Runfor(int(e1.get()),int(e2.get()),int(e3.get()),int(e4.get()),rVar.get())
+        Runfor(int(e1.get()),int(e2.get()),int(e3.get()),int(e4.get()),rVar.get(),C3Var.get())
 
 
 b1 = tkinter.Button(top,text="GO",command=b1command)
@@ -227,7 +245,7 @@ def Updatetextfunction():
     except:
          updatelabel2['text']= "Please enter an integer"
          checktwo=False
-    top.after(100,Updatetextfunction)
+    top.after(1000,Updatetextfunction)
 
 
 Updatetextfunction()
