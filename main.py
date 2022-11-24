@@ -1,11 +1,9 @@
 import random
 import tkinter
 import matplotlib.pyplot as plt
-import matplotlib.transforms as mtrans
 import numpy as np
 import os
 from numerize import numerize
-import math
 
 checkone=False
 checktwo=False
@@ -20,13 +18,18 @@ def Runfor(times,numberofguesses,positive ,negative,options,multicorrect=False):
         f = open('rawdata.txt', "w")
         f.close()
         f = open('rawdata.txt', "a")
-    positiveperlist = []
-    negativeperlist = []
+    if C1Var.get()==1:
+        positivescorelist=[]
+        negativescorelist=[]
+        positiveperlist = []
+        negativeperlist = []
+        positiveperlist.append(0)
+        negativeperlist.append(0)
+        positivescorelist.append(0)
+        negativescorelist.append(0)
     nofnegative = 0
     nofpositive = 0
     nofzero = 0
-    positiveperlist.append(0)
-    negativeperlist.append(0)
     scoresum=0
     scoremax=float('-inf')
     scoremin =float('inf')
@@ -58,9 +61,11 @@ def Runfor(times,numberofguesses,positive ,negative,options,multicorrect=False):
         scoresum+=score
         positiveper = (nofpositive/(x+1))*100
         negativeper = (nofnegative/(x+1))*100
-
-        positiveperlist.append(positiveper)
-        negativeperlist.append(negativeper)
+        if C1Var.get()==1:
+            positivescorelist.append(nofpositive)
+            negativescorelist.append(nofnegative)
+            positiveperlist.append(positiveper)
+            negativeperlist.append(negativeper)
     zeroper = (nofzero / times) * 100
     if C2Var.get()==1:
         f.write(f"\n\nAnswer Key - {answerkey}")
@@ -107,8 +112,13 @@ def Runfor(times,numberofguesses,positive ,negative,options,multicorrect=False):
 
 
     if C1Var.get() == 1:
-        fig,(ax1,ax2,ax3)= plt.subplots(3,figsize=(8,8))
-        fig.suptitle('Graphical Representation')
+        if multicorrect:
+            p = 'Multicorrect'
+        else:
+            p='Single Correct'
+        fig,((ax1,ax2),(ax4,ax3))= plt.subplots(2,2,figsize=(8,8))
+        fig.suptitle(f'Graphical Representation of (+{positive},-{abs(negative)}) with {options} options,{p}')
+        fig.set_size_inches(15,9)
 
         a = np.arange(0,times+1)
         z = [zeroper]*(times+1)
@@ -121,27 +131,30 @@ def Runfor(times,numberofguesses,positive ,negative,options,multicorrect=False):
         ax2.set_ylim(-5, 105)
         ax1.set_xlabel("Times Simulation is Run")
         ax2.set_xlabel("Times Simulation is Run")
+        ax4.set_xlabel("Times Simulation is Run")
         ax1.set_ylabel("% of results")
-        ax2.set_ylabel("% of results")
+        ax4.set_ylabel("No of Scores")
 
 
-
-        plt.subplots_adjust(left=0.08,
-                            bottom=0,
-                            right=0.971,
+        plt.subplots_adjust(left=0.07,
+                            bottom=0.064,
+                            right=0.967,
                             top=0.926,
-                            wspace=0,
-                            hspace=0.257)
+                            wspace=0.12,
+                            hspace=0.19)
 
         ax1.plot(a,positiveperlist,color='green',label=f"% of Positive results-{round(positiveper,3)}")
         ax1.plot(a,z,color="Blue",ls="dashed",label=f"% of Zero Results-{round(zeroper,3)}")
         ax2.plot(a,negativeperlist,color='red',label=f"% of Negative results-{round(negativeper,3)}")
+        ax4.plot(a,positivescorelist,color='green',label='No of positive scores')
+        ax4.plot(a,negativescorelist,color='red',label='No of negative scores')
         ax3.pie(items,labels=labels,explode=myexplode,shadow=True,autopct='%1.1f%%')
 
 
 
         ax1.legend()
         ax2.legend()
+        ax4.legend()
 
         plt.show()
 
@@ -200,6 +213,9 @@ e4 = tkinter.Entry(top,text="-1")
 e4.insert(0,"-1")
 e4.pack()
 
+spacetop = tkinter.Label(top,text="")
+spacetop.pack()
+
 C3Var = tkinter.BooleanVar()
 c3 = tkinter.Checkbutton(top,text = "Multicorrect(Each option can have muliple options as answers)",variable =C3Var, onvalue=True, offvalue =False)
 c3.pack()
@@ -245,7 +261,7 @@ def Updatetextfunction():
     except:
          updatelabel2['text']= "Please enter an integer"
          checktwo=False
-    top.after(1000,Updatetextfunction)
+    top.after(500,Updatetextfunction)
 
 
 Updatetextfunction()
