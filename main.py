@@ -7,7 +7,7 @@ from numerize import numerize
 
 checkone=False
 checktwo=False
-def Runfor(times,numberofguesses,positive ,negative,options,multicorrect=False):
+def Runfor(times,numberofguesses,positive ,negative,options,multicorrect):
     n=0
     if multicorrect:
         n=options
@@ -19,14 +19,11 @@ def Runfor(times,numberofguesses,positive ,negative,options,multicorrect=False):
         f.close()
         f = open('rawdata.txt', "a")
     if C1Var.get()==1:
-        positivescorelist=[]
-        negativescorelist=[]
-        positiveperlist = []
-        negativeperlist = []
-        positiveperlist.append(0)
-        negativeperlist.append(0)
-        positivescorelist.append(0)
-        negativescorelist.append(0)
+        positivescorelist=[0]
+        negativescorelist=[0]
+        positiveperlist = [0]
+        negativeperlist = [0]
+
     nofnegative = 0
     nofpositive = 0
     nofzero = 0
@@ -126,6 +123,7 @@ def Runfor(times,numberofguesses,positive ,negative,options,multicorrect=False):
         items=(positiveper,negativeper,zeroper)
         labels=("Positive%","Negative%","Zero%")
         myexplode = [0.1, 0.1, 0.1]
+        colorlist=('#80ff00','#ff471a','#00ccff')
 
         ax1.set_ylim(-5,105)
         ax2.set_ylim(-5, 105)
@@ -143,12 +141,12 @@ def Runfor(times,numberofguesses,positive ,negative,options,multicorrect=False):
                             wspace=0.12,
                             hspace=0.19)
 
-        ax1.plot(a,positiveperlist,color='green',label=f"% of Positive results-{round(positiveper,3)}")
-        ax1.plot(a,z,color="Blue",ls="dashed",label=f"% of Zero Results-{round(zeroper,3)}")
-        ax2.plot(a,negativeperlist,color='red',label=f"% of Negative results-{round(negativeper,3)}")
-        ax4.plot(a,positivescorelist,color='green',label='No of positive scores')
-        ax4.plot(a,negativescorelist,color='red',label='No of negative scores')
-        ax3.pie(items,labels=labels,explode=myexplode,shadow=True,autopct='%1.1f%%')
+        ax1.plot(a,positiveperlist,color='#80ff00',label=f"% of Positive results-{round(positiveper,3)}")
+        ax1.plot(a,z,color="#00ccff",ls="dashed",label=f"% of Zero Results-{round(zeroper,3)}")
+        ax2.plot(a,negativeperlist,color='#ff471a',label=f"% of Negative results-{round(negativeper,3)}")
+        ax4.plot(a,positivescorelist,color='#80ff00',label='No of positive scores')
+        ax4.plot(a,negativescorelist,color='#ff471a',label='No of negative scores')
+        ax3.pie(items,labels=labels,explode=myexplode,shadow=True,autopct='%1.1f%%',colors=colorlist)
 
 
 
