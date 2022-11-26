@@ -8,7 +8,6 @@ from numerize import numerize
 checkone=False
 checktwo=False
 def Runfor(times,numberofguesses,positive ,negative,options,multicorrect):
-    n=0
     if multicorrect:
         n=options
     else:
@@ -102,9 +101,9 @@ def Runfor(times,numberofguesses,positive ,negative,options,multicorrect):
 
     def b2command():
         os.startfile('rawdata.txt')
-
-    b2 = tkinter.Button(Extra, text="View raw results", command=b2command)
-    b2.pack()
+    if C2Var.get()==1:
+        b2 = tkinter.Button(Extra, text="View raw results", command=b2command)
+        b2.pack()
 
 
 
