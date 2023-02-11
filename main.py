@@ -7,12 +7,28 @@ from numerize import numerize
 
 checkone=False
 checktwo=False
+
+def fix_labels(mylabels, tooclose=0.1, sepfactor=2):
+    vecs = np.zeros((len(mylabels), len(mylabels), 2))
+    dists = np.zeros((len(mylabels), len(mylabels)))
+    for i in range(0, len(mylabels)-1):
+        for j in range(i+1, len(mylabels)):
+            a = np.array(mylabels[i].get_position())
+            b = np.array(mylabels[j].get_position())
+            dists[i,j] = np.linalg.norm(a-b)
+            vecs[i,j,:] = a-b
+            if dists[i,j] < tooclose:
+                mylabels[i].set_x(a[0] + sepfactor*vecs[i,j,0])
+                mylabels[i].set_y(a[1] + sepfactor*vecs[i,j,1])
+                mylabels[j].set_x(b[0] - sepfactor*vecs[i,j,0])
+                mylabels[j].set_y(b[1] - sepfactor*vecs[i,j,1])
+#Thank you stack overflow for the ^
 def Runfor(times,numberofguesses,positive ,negative,options,multicorrect):
     if multicorrect:
         n=options
     else:
         n=1
-    answerkey = list((random.sample(range(1, options + 1), random.randint(1, n))) for _ in range(numberofguesses + 1))
+    answerkey = list(sorted(random.sample(range(1, options + 1), random.randint(1, n))) for _ in range(numberofguesses + 1))
     if C2Var.get()==1:
         f = open('rawdata.txt', "w")
         f.close()
@@ -33,14 +49,15 @@ def Runfor(times,numberofguesses,positive ,negative,options,multicorrect):
         score=0
         rawresultlist=[]
         for i in range(0,numberofguesses):
-            if (random.sample(range(1, options + 1), random.randint(1, n))) == answerkey[i]:
+            guessedanswer = sorted(random.sample(range(1, options + 1), random.randint(1, n)))
+            if guessedanswer == answerkey[i]:
                 score+=positive
                 if C2Var.get()==1:
-                    rawresultlist.append(f"+{positive}")
+                    rawresultlist.append(f"{guessedanswer},+{positive}")
             else:
                 score-= abs(negative)
                 if C2Var.get() ==1:
-                    rawresultlist.append(f"-{abs(negative)}")
+                    rawresultlist.append(f"{guessedanswer},-{abs(negative)}")
         if score==0:
             nofzero +=1
 
@@ -119,10 +136,10 @@ def Runfor(times,numberofguesses,positive ,negative,options,multicorrect):
         a = np.arange(0,times+1)
         z = [zeroper]*(times+1)
 
-        items=(positiveper,negativeper,zeroper)
-        labels=("Positive%","Negative%","Zero%")
-        myexplode = [0.1, 0.1, 0.1]
-        colorlist=('#80ff00','#ff471a','#00ccff')
+        items=list(i for i in (positiveper,negativeper,zeroper) if i != 0)
+        labelslist=list(("Positive%","Negative%","Zero%")[i] for i in range(3) if (positiveper,negativeper,zeroper)[i] !=0)
+        myexplode = list((0.1, 0.1, 0.1)[i] for i in range(3) if (positiveper,negativeper,zeroper)[i] != 0)
+        colorlist=list(('#80ff00','#ff471a','#00ccff')[i] for i in range(3) if (positiveper,negativeper,zeroper)[i] != 0)
 
         ax1.set_ylim(-5,105)
         ax2.set_ylim(-5, 105)
@@ -145,13 +162,23 @@ def Runfor(times,numberofguesses,positive ,negative,options,multicorrect):
         ax2.plot(a,negativeperlist,color='#ff471a',label=f"% of Negative results-{round(negativeper,3)}")
         ax4.plot(a,positivescorelist,color='#80ff00',label='No of positive scores')
         ax4.plot(a,negativescorelist,color='#ff471a',label='No of negative scores')
-        ax3.pie(items,labels=labels,explode=myexplode,shadow=True,autopct='%1.1f%%',colors=colorlist)
+        wedges,labels1,autopct = ax3.pie(items,labels=labelslist,explode=myexplode,shadow=False,autopct='%1.1f%%',colors=colorlist)
 
+        fix_labels(autopct, sepfactor=4)
+        fix_labels(labels1, sepfactor=3)
 
+        labels = ['{0} - {1:1.2f} %'.format(i, j) for i, j in zip(labelslist, items)]
+
+        sort_legend = True
+        if sort_legend:
+            wedges, labels, dummy = zip(*sorted(zip(wedges, labels, items),
+                                                 key=lambda x: x[2],
+                                                 reverse=True))
 
         ax1.legend()
         ax2.legend()
         ax4.legend()
+        ax3.legend(wedges , labels)
 
         plt.show()
 
