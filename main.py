@@ -2,7 +2,7 @@ import random
 import tkinter
 import matplotlib.pyplot as plt
 import numpy as np
-import os
+import os,subprocess,sys
 from numerize import numerize
 
 checkone=False
@@ -117,7 +117,11 @@ def Runfor(times,numberofguesses,positive ,negative,options,multicorrect):
     t10.pack()
 
     def b2command():
-        os.startfile('rawdata.txt')
+        if sys.platform == "win32":
+            os.startfile('rawdata.txt')
+        else:
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, 'rawdata.txt'])
     if C2Var.get()==1:
         b2 = tkinter.Button(Extra, text="View raw results", command=b2command)
         b2.pack()
